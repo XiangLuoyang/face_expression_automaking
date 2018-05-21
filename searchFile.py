@@ -13,7 +13,20 @@ class MyApp(wx.App):
        frame.Show()
        self.SetTopWindow(frame)
        return True
+
+class Image(wx.Frame):
+
+    def __init__(self,image,parent=None,id=-1,pos=wx.DefaultPosition,title="Hello,wxPython!"):
     
+        temp = image.ConvertToBitmap()
+
+        size = temp.GetWidth(),temp.GetHeight()
+        wx.Frame.__init__(self,parent,id,title,pos,size)
+
+        panel = wx.Panel(self,-1)
+        wx.StaticBitmap(parent=self,bitmap=temp)
+        wx.StaticBitmap(parent=panel,bitmap=temp)
+
 class MyFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, title="Face_Expression_AutoMai",
@@ -214,7 +227,7 @@ class MyFrame(wx.Frame):
         im2, landmarks2 = read_im_and_landmarks(fileaddr2)
 
         M = transformation_from_points(landmarks1[ALIGN_POINTS],
-                                    landmarks2[ALIGN_POINTS])
+                                      landmarks2[ALIGN_POINTS])
 
         mask = get_face_mask(im2, landmarks2)
         warped_mask = warp_im(mask, M, im1.shape)
@@ -231,9 +244,16 @@ class MyFrame(wx.Frame):
         # if self.sound.IsOk():
         #     self.sound.Play(wx.SOUND_ASYNC)
         # else:
-        #     wx.MessageBox("Invalid sound file", "Error")
-    
+        #     wx.MessageBox("Invalid sound file", "Error")    
 
+        # Alerts after generating the pictures
+        dlg = wx.MessageDialog(None, '图片生成完毕',
+                          'Succeed', wx.YES_NO | wx.ICON_QUESTION)
+        result = dlg.ShowModal()
+        dlg.Destroy()
+        image = wx.Image("output.jpg",wx.BITMAP_TYPE_JPEG)
+        frame = Image(image)
+        frame.Show()
 app = wx.PySimpleApp()
 frm = MyFrame()
 frm.Show()
